@@ -1,0 +1,58 @@
+---
+title: Introducción
+description: 'Bienvenido a la documentación del API de Simafi para Municipalidades.'
+date: May 10 2022
+---
+
+## Datos de acceso
+
+Los datos de acceso deben se proporcionados por la institución con la que se esta realizando la conexión.
+
+| Parametro   | Descripción                                  |
+| ----------- | -------------------------------------------- |
+| x-auth-id   | identificador de banco                       |
+| x-auth-key  | llave unica generada por la institución      |
+| ip.servidor | Es la IP publica o del VPN de la institución |
+| puerto      | puerto de acceso a rest API                  |
+
+## Tabla de codigos de mensajes
+
+| Código | Descripción                                                     |
+| -----: | --------------------------------------------------------------- |
+|   0100 |
+|   0100 | No existe registro.                                             |
+|   0110 | No hay pagos pendientes.                                        |
+|   0120 | Las facturas estan vencidas.                                    |
+|   0200 | Fecha de registro no puede estar vacia                          |
+|   0210 | Referencia no puede estar vacia                                 |
+|   0220 | Codigo de banco puede estar vacio                               |
+|   0230 | Clave no puede estar vacio                                      |
+|   0240 | El monto total no concuerda con la operación.                   |
+|   0300 | No existe código o llave vigente                                |
+|   0310 | Nueva llave generada con exito                                  |
+|   0320 | No existe código/llave válido                                   |
+|   0400 | Pago exitoso                                                    |
+|   0410 | Reversion exitosa                                               |
+|   0420 | Consulta exitosa                                                |
+|   0999 | Error en el procesamiento de la petición, contactar a comercio. |
+
+## Encabezado de las peticiones
+
+Toda petición debe incluir en el header los parametros para autenticar al usuario
+
+| Parametro  |
+| ---------- |
+| x-auth-id  |
+| x-auth-key |
+
+Ejemplo en **c#** de petición con los parametros en el header.
+
+```js
+var client = new RestClient("/consulta/publicos");
+client.Timeout = -1;
+var request = new RestRequest(Method.GET);
+request.AddHeader("x-auth-id", "99");
+request.AddHeader("x-auth-key", "8E9AC3E8B77C5B79161E5D1B2A7C0D06");
+IRestResponse response = client.Execute(request);
+Console.WriteLine(response.Content);
+```

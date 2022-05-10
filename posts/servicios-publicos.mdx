@@ -1,0 +1,282 @@
+---
+title: Servicios públicos
+description: 'API sobre consulta, pago y reversión de servicios públicos.'
+date: May 09 2022
+---
+
+# Consulta de saldo
+
+Es una petición de tipo `GET` y en la URL lleva el parametro `clave` para realizar la consulta.
+Toda petición debe incluir en el header los parametros `x-auth-id` y `x-auth-key`
+
+```
+[GET] http://ip.servidor:puerto/simafiws/consulta/publicos/{{clave}}
+```
+
+### Parametros
+
+| Parametro | Descripción                                      |
+| --------- | ------------------------------------------------ |
+| clave     | un codigo alfanumerico que identifica al cliente |
+
+### Ejemplo de petición
+
+```js
+var client = new RestClient("http://190.168.1.1:8080/simafiws/consulta/publicos/SEPU04-01-0585");
+client.Timeout = -1;
+var request = new RestRequest(Method.GET);
+request.AddHeader("x-auth-id", "99");
+request.AddHeader("x-auth-key", "999AC3E8B77C5B79161E5D1B2A7C0D06");
+IRestResponse response = client.Execute(request);
+Console.WriteLine(response.Content);
+```
+
+### Respuesta de petición
+
+Esta respuesta se obtiene cuando una petición resulta exitosa.
+
+```json
+{
+  "nombreAbonado": "LESLY XIOMARA MATAMOROS",
+  "totalMora": 422,
+  "clave": "SEPU04-01-0585",
+  "expediente": "",
+  "estado": "",
+  "comentario": "pagando 2020 y 2019",
+  "fechaVence": "N",
+  "direccion": "colonia la union 33 calle 4 y 8 avenidao pasaje principal",
+  "codigo": "999",
+  "detalle": [
+    {
+      "id": 5231748,
+      "codigoConcepto": "119-52",
+      "concepto": "Constancias parques  y ornato",
+      "valor": 5
+    },
+    {
+      "id": 5231747,
+      "codigoConcepto": "119-49",
+      "concepto": "Mensura Urbana",
+      "valor": 200
+    },
+    {
+      "id": 5231741,
+      "codigoConcepto": "119-52",
+      "concepto": "Constancias parques  y ornato",
+      "valor": 5
+    },
+    {
+      "id": 5231742,
+      "codigoConcepto": "119-51",
+      "concepto": "Complemento de mensura",
+      "valor": 62
+    },
+    {
+      "id": 5231732,
+      "codigoConcepto": "119-58",
+      "concepto": "Elaboracion de plano",
+      "valor": 300
+    },
+    {
+      "id": 5231748,
+      "codigoConcepto": "119-52",
+      "concepto": "Descuento 3ra edad",
+      "valor": -150
+    }
+  ]
+}
+```
+
+Para ver la tabla de codigos ir [aquí](/posts/introduccion).
+
+### Respuesta de mensajes
+
+Esta respuesta se obtiene cuando una petición presenta un error.
+
+```json
+{
+  "success": true,
+  "mensajes": "No existe registro.",
+  "codigo": "0100"
+}
+```
+
+Para ver la tabla de codigos ir [aquí](/posts/introduccion).
+
+Cuando **"success"** devuelve **true** es un mensaje generado por sistema y se puede mostrar al usuario final. En otro caso es un error que se debe reportar a la institución
+
+---
+
+# Pago de saldo
+
+Es una petición de tipo `POST` para realizar el pago.
+Toda petición debe incluir en el header los parametros `x-auth-id` y `x-auth-key`
+
+```
+[POST] http://ip.servidor:puerto/simafiws/pago/publicos
+```
+
+### JSON Body
+
+Los pagos se deben enviar utilizando la siguiente estructura JSON
+
+```json
+{
+  "banco": 99,
+  "cajero": "ANAPINEDA",
+  "clave": "SEPU04-01-0585",
+  "fechaEfectiva": "2012-01-10",
+  "fechaRegistro": "2012-01-10",
+  "horaRegistro": "10:20:20",
+  "monto": 572.0,
+  "referencia": "REF1122334455",
+  "sucursal": "01"
+}
+```
+
+| Campo         | Descripción                                                                                                             |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| banco         | es el mismo valor que lleva la el parametros **x-auth-id**                                                              |
+| clave         | un codigo alfanumerico que identifica al cliente                                                                        |
+| referencia    | el número de referencia debe ser _UNICO_ por cada petición de pago, este código se utilizará para ejecutar la reversión |
+| fechaRegistro | formato de fecha [YYYY-MM-DD]                                                                                           |
+| horaRegistro  | formato de fecha [hh:mm:ss]                                                                                             |
+| sucursal      | identifica el id de la sucursal que esta realizando la transacción                                                      |
+
+### Ejemplo de petición
+
+```js
+var client = new RestClient("http://192.168.1.1:8080/simafiws/pago/publicos");
+client.Timeout = -1;
+var request = new RestRequest(Method.POST);
+request.AddHeader("x-auth-id", "99");
+request.AddHeader("x-auth-key", "8E9AC3E8B77C5B79161E5D1B2A7C0D06");
+request.AddHeader("Content-Type", "application/json");
+var body = @"{
+" + "\n" +
+@"    ""banco"": 99,
+" + "\n" +
+@"    ""cajero"": ""ANAPINEDA"",
+" + "\n" +
+@"    ""clave"": ""SEPU04-01-0585"",
+" + "\n" +
+@"    ""fechaEfectiva"": ""2012-01-10"",
+" + "\n" +
+@"    ""fechaRegistro"": ""2012-01-10"",
+" + "\n" +
+@"    ""horaRegistro"": ""10:20:20"",
+" + "\n" +
+@"    ""monto"": 572.0,
+" + "\n" +
+@"    ""referencia"": ""REF1122334455"",
+" + "\n" +
+@"    ""sucursal"": ""01""
+" + "\n" +
+@"}";
+request.AddParameter("application/json", body,  ParameterType.RequestBody);
+IRestResponse response = client.Execute(request);
+Console.WriteLine(response.Content);
+```
+
+### Mensaje de respuesta
+
+```json
+{
+  "success": true,
+  "mensajes": "Pago exitoso",
+  "codigo": "0400",
+  "refenciaUnica": "REF112233445534"
+}
+```
+
+Para ver la tabla de codigos ir [aquí](/posts/introduccion).
+
+Cuando **"success"** devuelve **true** es un mensaje generado por sistema y se puede mostrar al usuario final. En otro caso es un error que se debe reportar a la institución.
+
+---
+
+# Reversión de pago
+
+Es una petición de tipo `POST` para realizar la reversion.
+Toda petición debe incluir en el header los parametros `x-auth-id` y `x-auth-key`
+
+```
+[POST] http://ip.servidor:puerto/simafiws/reversion/publicos
+```
+
+### JSON Body
+
+Las reversiones se deben enviar utilizando la siguiente estructura JSON
+
+```json
+{
+  "banco": 99,
+  "cajero": "ANAPINEDA",
+  "clave": "SEPU04-01-0585",
+  "fechaEfectiva": "2012-01-10",
+  "fechaRegistro": "2012-01-10",
+  "horaRegistro": "10:20:20",
+  "monto": 572.0,
+  "referencia": "REF1122334455",
+  "sucursal": "01"
+}
+```
+
+| Campo         | Descripción                                                                                                             |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| banco         | es el mismo valor que lleva la el parametros **x-auth-id**                                                              |
+| clave         | un codigo alfanumerico que identifica al cliente                                                                        |
+| referencia    | el número de referencia debe ser _UNICO_ por cada petición de pago, este código se utilizará para ejecutar la reversión |
+| fechaRegistro | formato de fecha [YYYY-MM-DD]                                                                                           |
+| horaRegistro  | formato de fecha [hh:mm:ss]                                                                                             |
+| sucursal      | identifica el id de la sucursal que esta realizando la transacción                                                      |
+
+### Ejemplo de petición
+
+```js
+var client = new RestClient("http://192.168.1.1:8080/simafiws/reversion/publicos");
+client.Timeout = -1;
+var request = new RestRequest(Method.POST);
+request.AddHeader("x-auth-id", "99");
+request.AddHeader("x-auth-key", "8E9AC3E8B77C5B79161E5D1B2A7C0D06");
+request.AddHeader("Content-Type", "application/json");
+var body = @"{
+" + "\n" +
+@"    ""banco"": 99,
+" + "\n" +
+@"    ""cajero"": ""ANAPINEDA"",
+" + "\n" +
+@"    ""clave"": ""SEPU04-01-0585"",
+" + "\n" +
+@"    ""fechaEfectiva"": ""2012-01-10"",
+" + "\n" +
+@"    ""fechaRegistro"": ""2012-01-10"",
+" + "\n" +
+@"    ""horaRegistro"": ""10:20:20"",
+" + "\n" +
+@"    ""monto"": 572.0,
+" + "\n" +
+@"    ""referencia"": ""REF1122334455"",
+" + "\n" +
+@"    ""sucursal"": ""01""
+" + "\n" +
+@"}";
+request.AddParameter("application/json", body,  ParameterType.RequestBody);
+IRestResponse response = client.Execute(request);
+Console.WriteLine(response.Content);
+```
+
+### Mensaje de respuesta
+
+```json
+{
+  "success": true,
+  "mensajes": "Reversion exitosa",
+  "codigo": "0400",
+  "refenciaUnica": "REF112233445534"
+}
+```
+
+Para ver la tabla de codigos ir [aquí](/posts/introduccion).
+
+Cuando **"success"** devuelve **true** es un mensaje generado por sistema y se puede mostrar al usuario final. En otro caso es un error que se debe reportar a la institución.
