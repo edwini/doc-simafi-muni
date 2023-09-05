@@ -1,0 +1,49 @@
+{
+    "nombreAbonado": "LESLY XIOMARA MATAMOROS",
+    "totalMora": 422,
+    "clave": "SEPU04-01-0585",
+    "expediente": "",
+    "estado": "",
+    "comentario": "pagando 2020 y 2019",
+    "fechaVence": "N",
+    "direccion": "colonia la union 33 calle 4 y 8 avenidao pasaje principal",
+    "codigo": "999",
+    "detalle": [
+      {
+        "id": 5231748,
+        "codigoConcepto": "119-52",
+        "concepto": "Constancias parques  y ornato",
+        "valor": 5
+      },
+      {
+        "id": 5231747,
+        "codigoConcepto": "119-49",
+        "concepto": "Mensura Urbana",
+        "valor": 200
+      },
+      {
+        "id": 5231741,
+        "codigoConcepto": "119-52",
+        "concepto": "Constancias parques  y ornato",
+        "valor": 5
+      },
+      {
+        "id": 5231742,
+        "codigoConcepto": "119-51",
+        "concepto": "Complemento de mensura",
+        "valor": 62
+      },
+      {
+        "id": 5231732,
+        "codigoConcepto": "119-58",
+        "concepto": "Elaboracion de plano",
+        "valor": 300
+      },
+      {
+        "id": 5231748,
+        "codigoConcepto": "119-52",
+        "concepto": "Descuento 3ra edad",
+        "valor": -150
+      }
+    ]
+  }
